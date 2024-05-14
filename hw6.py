@@ -21,6 +21,7 @@ class GraphBuilder:
     def __init__(self, matrix):
         self.matrix = matrix
         self.digraph = False
+        self.edge_symbol = '--'
         
         # check if matrix represents an undirected graph
         i = 0
@@ -37,7 +38,8 @@ class GraphBuilder:
         self.nodes = []
         
         for i in range(len(self.matrix)):
-            self.nodes.append(str(i + 1))
+            # self.nodes.append(str(i + 1))
+            self.nodes.append(self.nodeToString(i))
             
     def generateGraph(self, file_name):
         with open(file_name, 'w') as file:
@@ -58,7 +60,6 @@ class GraphBuilder:
         return output
             
     def generateEdges(self, current_indent = 0):
-        letters = string.ascii_lowercase # TODO: use this, probably move up to affect self.nodes
         output = ''
         max_col = len(self.matrix)
         
@@ -72,14 +73,28 @@ class GraphBuilder:
                     
         return output
     
+    def nodeToString(self, num):
+        letters = string.ascii_uppercase # TODO: use this, probably move up to affect self.nodes
+        output = letters[num % self.LETTER_COUNT]
+        num = int(num / self.LETTER_COUNT)
+        
+        while num > 0:
+            output += letters[num % self.LETTER_COUNT]
+            num = int(num / self.LETTER_COUNT)
+        print(output)
+        return output
+    
     def __str__(self):
         return self.generateNodes() + self.generateEdges()
 
 if __name__ == "__main__":
+    m = createMatrix('adj1.txt')
+    gb = GraphBuilder(m)
+    print(f'edges: {gb.generateEdges()}')
     # gb = GraphBuilder('adj4.txt')
     # print(gb.generateEdges())
-    # gb.generateGraph("output.dot")
+    gb.generateGraph("output.dot")
     
     # invoke testing code via pytest
     # "-rA" argument included to list all tests, including passed tests
-    sys.exit(pytest.main(["-rA"]))
+    # sys.exit(pytest.main())#["-rA"]))

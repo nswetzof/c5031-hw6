@@ -51,6 +51,18 @@ class TestGraphBuilder():
         assert graph.generateNodes() == '1\n'
         assert graph.generateEdges() == ''
         
+    def testDisjointGraph(self):
+        graph = GraphBuilder(self.disjoint_graph)
+        
+        assert graph.generateNodes() == '1\n2\n'
+        assert graph.generateEdges() == ''
+        
+    def testOneEdge(self):
+        graph = GraphBuilder(self.one_edge_graph)
+        
+        assert graph.generateNodes() == '1\n2\n'
+        assert graph.generateEdges() == '1 -> 2'
+        
     # def create_temp_file(self, tmpdir, file_name):
     #     p = tmpdir.join(file_name)
         

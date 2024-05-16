@@ -13,55 +13,63 @@ from hw6 import GraphBuilder
 
 class TestGraphBuilder():
     empty_graph = []
-    single_node = [1]
-    disjoint_graph = [[0, 0],
-                      [0, 0]]
-    one_edge_digraph = [[0, 1],
-                        [0, 0]]
-    one_edge_graph = [[0, 1],
-                         [1, 0]]
-    two_edge_graph = [[0, 1],
-                      [1, 0]]
+    single_node = [['0']]
+    disjoint_graph = [['0', '0'],
+                      ['0', '0']]
+    one_edge_digraph = [['0', '1'],
+                        ['0', '0']]
+    two_edge_graph = [['0', '1'],
+                      ['1', '0']]
+    self_edge_digraph = [['1', '0'],
+                         ['1', '0']]
+    self_edge_graph = [['1', '0'],
+                       ['0', '0']]
     
-    # @pytest.fixture
-    # def empty_graph(self, tmpdir):
-    #     file_name = 'empty.txt'
-    #     with open(file_name, 'w') as file:
-    #         file.write('')
-            
-    #     return file_name
+    """ Tests for generateNodes """
     
-    # @pytest.fixture
-    # def single_node(self):
-    #     file_name = 'single_node.txt'
-    #     with open(file_name, 'w') as file:
-    #         file.write('0')
-            
-    #     return file_name
     
-    def test_EmptyGraph(self):
+    def test_NodesEmptyGraph(self):
         graph = GraphBuilder(self.empty_graph)
-        
         assert graph.generateNodes() == ''
-        assert graph.generateEdges() == ''
         
-    def testSingleNode(self, capfd):
+    def testNodesSingleNode(self):
         graph = GraphBuilder(self.single_node)
+        assert graph.generateNodes() == 'A\n'
         
-        assert graph.generateNodes() == '1\n'
-        assert graph.generateEdges() == ''
-        
-    def testDisjointGraph(self):
+    def testNodesDisjointGraph(self):
         graph = GraphBuilder(self.disjoint_graph)
+        assert graph.generateNodes() == 'A\nB\n'
         
-        assert graph.generateNodes() == '1\n2\n'
+    def testNodesOneEdge(self):
+        graph = GraphBuilder(self.one_edge_digraph)
+        assert graph.generateNodes() == 'A\nB\n'
+        
+    def testNodesSelfEdge(self):
+        graph = GraphBuilder(self.self_edge_digraph)
+        assert graph.generateNodes() == 'A\nB\n'
+        
+    def test_EdgesEmptyGraph(self):
+        graph = GraphBuilder(self.empty_graph)
         assert graph.generateEdges() == ''
         
-    def testOneEdge(self):
-        graph = GraphBuilder(self.one_edge_graph)
+    def testEdgesSingleNode(self):
+        graph = GraphBuilder(self.single_node)
+        assert graph.generateEdges() == ''
         
-        assert graph.generateNodes() == '1\n2\n'
-        assert graph.generateEdges() == '1 -> 2'
+    def testEdgesDisjointGraph(self):
+        graph = GraphBuilder(self.disjoint_graph)
+        assert graph.generateEdges() == ''
+        
+    def testEdgesOneEdge(self):
+        graph = GraphBuilder(self.one_edge_digraph)
+        assert graph.generateEdges() == 'A -> B\n'
+        
+    def testEdgesSelfEdge(self):
+        graph = GraphBuilder(self.self_edge_digraph)
+        edgeSet = set(['B -> A', 'A -> A'])
+        edgeString = graph.generateEdges().split('\n')
+        assert edgeString[0] in edgeSet
+        assert edgeString[1] in edgeSet
         
     # def create_temp_file(self, tmpdir, file_name):
     #     p = tmpdir.join(file_name)

@@ -5,6 +5,8 @@ Nathan Swetzof
 
 import sys, string, pytest
 
+# Create an adjacency matrix based on the contents of a file with the given
+#   name, containing tab-separated edge weights
 def createMatrix(file_name):
     matrix = []
     
@@ -15,6 +17,10 @@ def createMatrix(file_name):
     return matrix
     
 
+""" 
+GraphBuilder class stores information describing a graph and provides
+methods for converting it to GraphViz code
+"""
 class GraphBuilder:
     LETTER_COUNT = 26
     
@@ -22,6 +28,7 @@ class GraphBuilder:
         self.matrix = matrix
         self.digraph = False
         self.edge_symbol = '--'
+        self.nodes = []
         
         # check if matrix represents an undirected graph
         i = 0
@@ -34,11 +41,8 @@ class GraphBuilder:
                 
                 j += 1
             i += 1
-            
-        self.nodes = []
         
         for i in range(len(self.matrix)):
-            # self.nodes.append(str(i + 1))
             self.nodes.append(self.nodeToString(i))
             
     def generateGraph(self, file_name):
@@ -51,6 +55,9 @@ class GraphBuilder:
             file.write(self.generateEdges(1))
             file.write('}')
             
+    # Return a string representing the nodes in valid GraphViz syntax
+    # current_indent applies the given number of indents on each line of the 
+    #   returned string to aid in formatting the GraphViz output
     def generateNodes(self, current_indent = 0):
         output = ''
         
@@ -59,13 +66,16 @@ class GraphBuilder:
             
         return output
             
+    # Return a string representing the set of edges in valid GraphViz syntax
+    # current_indent applies the given number of indents on each line of the 
+    #   returned string to aid in formatting the GraphViz output
     def generateEdges(self, current_indent = 0):
         output = ''
         max_col = len(self.matrix)
         
         for i in range(len(self.matrix)):
             if not self.digraph:
-                max_col = i
+                max_col = i + 1
             for j in range(max_col):
                 if self.matrix[i][j] != '0':
                     output += '\t' * current_indent + \
@@ -73,28 +83,28 @@ class GraphBuilder:
                     
         return output
     
+    # Helper method converts an integer to a letter representing the node name 
+    #   in a graph.  Upon reaching 'Z', an additional letter is added for the 
+    #   node name ("AA", "AB", etc.)
     def nodeToString(self, num):
-        letters = string.ascii_uppercase # TODO: use this, probably move up to affect self.nodes
+        letters = string.ascii_uppercase
         output = letters[num % self.LETTER_COUNT]
         num = int(num / self.LETTER_COUNT)
         
         while num > 0:
             output += letters[num % self.LETTER_COUNT]
             num = int(num / self.LETTER_COUNT)
-        print(output)
         return output
-    
-    def __str__(self):
-        return self.generateNodes() + self.generateEdges()
 
 if __name__ == "__main__":
-    m = createMatrix('adj1.txt')
-    gb = GraphBuilder(m)
-    print(f'edges: {gb.generateEdges()}')
-    # gb = GraphBuilder('adj4.txt')
-    # print(gb.generateEdges())
-    gb.generateGraph("output.dot")
+    file_names = ['adj1.txt', 'adj2.txt', 'adj3.txt', 'adj4.txt']
+    
+    # create GraphViz files
+    for file_name in file_names:
+        matrix = createMatrix(file_name)
+        graph = GraphBuilder(matrix)
+        graph.generateGraph(file_name.split('.')[0] + '.dot')
     
     # invoke testing code via pytest
     # "-rA" argument included to list all tests, including passed tests
-    # sys.exit(pytest.main())#["-rA"]))
+    sys.exit(pytest.main())#["-rA"]))

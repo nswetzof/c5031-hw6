@@ -15,6 +15,9 @@ class TestGraphBuilder():
                         ['0', '0']]
     two_edge_graph = [['0', '1'],
                       ['1', '0']]
+    two_edge_digraph = [['0', '1', '0'],
+                        ['0', '0', '1'],
+                        ['0', '0', '0']]
     self_edge_digraph = [['1', '0'],
                          ['1', '0']]
     self_edge_graph = [['1', '0'],
@@ -70,7 +73,12 @@ class TestGraphBuilder():
         assert len(edgeStrings) == 1
         assert edgeStrings[0] in edgeSet
         
-    # def testEdgesTwoEdgeDigraph(self):
+    def testEdgesTwoEdgeDigraph(self):
+        graph = GraphBuilder(self.two_edge_digraph)
+        edgeSet = set(['A -> B', 'B -> C'])
+        edgeStrings = graph.generateEdges().split('\n')
+        assert edgeStrings[0] in edgeSet
+        assert edgeStrings[1] in edgeSet
         
     
     def testEdgesSelfEdge(self):

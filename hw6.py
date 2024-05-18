@@ -1,6 +1,11 @@
 """
 Nathan Swetzof
-5/##/24
+5/17/24
+
+Create a GraphViz file given an adjacency matrix contained in a tab separated
+text file.
+
+
 """
 
 import sys, string, pytest
@@ -24,7 +29,6 @@ def createMatrix(file_name):
                     
             matrix.append(row)
             col_length += 1
-        print(f"row length: {row_length}, column length: {col_length}")
         if col_length != row_length and row_length > 0:
             raise ValueError('Not a square matrix.  Row and column lengths must be equal.')
         
@@ -115,11 +119,13 @@ if __name__ == "__main__":
     file_names = ['adj1.txt', 'adj2.txt', 'adj3.txt', 'adj4.txt']
     
     # create GraphViz files
-    # for file_name in file_names:
-    #     matrix = createMatrix(file_name)
-    #     graph = GraphBuilder(matrix)
-    #     graph.generateGraph(file_name.split('.')[0] + '.dot')
+    for file_name in file_names:
+        dot_file_name = file_name.split('.')[0] + '.dot'
+        matrix = createMatrix(file_name)
+        graph = GraphBuilder(matrix)
+        graph.generateGraph(dot_file_name)
+        print(f"GraphViz file {dot_file_name} created from {file_name}.")
     
     # invoke testing code via pytest
     # "-rA" argument included to list all tests, including passed tests
-    sys.exit(pytest.main())#["-rA"]))
+    sys.exit(pytest.main(["-rA"]))

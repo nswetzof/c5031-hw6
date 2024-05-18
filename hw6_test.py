@@ -1,8 +1,9 @@
 """
 Nathan Swetzof
+5/17/24
 
 Tests for hw6.py
-The purpose of each test is explained in the comments above the associated
+An explanation of each test is explained in the comments above the associated
 test function.
 """
 
@@ -10,6 +11,7 @@ import pytest, os
 from hw6 import GraphBuilder, createMatrix
 
 class TestGraphBuilder():    
+    # names of files used to test createMatrix function
     empty_file = 'empty.txt'
     unequal_row_file = 'unequalrows.txt'
     non_square_file = 'nonsquare.txt'
@@ -30,19 +32,25 @@ class TestGraphBuilder():
     
     """ Tests for createMatrix function """
     
+    # Test empty matrix is generated from an empty file and no exceptions
+    #   occur
     def test_CreateMatrixEmpty(self):
         m = createMatrix(self.empty_file)
         assert m == []
         
+    # Test for exception if rows do not have equal lengths, resulting in an
+    #   invalid matrix
     def test_CreateMatrixUnequalRows(self):
         with pytest.raises(ValueError, match='Row lengths must all be equal'):
             createMatrix(self.unequal_row_file)
             
+    # Test for exception if rows and columns are not of equal length
     def test_CreateMatrixNonSquare(self):
         with pytest.raises(ValueError, \
                            match=r'Not a square matrix.  Row and column lengths must be equal.'):
             createMatrix(self.non_square_file)
             
+    # Test that the correct matrix is generated from a valid file
     def test_CreateMatrixSquare(self):
         m = createMatrix(self.square_matrix_file)
         assert m == [['1', '0'], ['0', '0']]

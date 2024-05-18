@@ -1,12 +1,21 @@
-# -*- coding: utf-8 -*-
 """
 Nathan Swetzof
+
+Tests for hw6.py
+The purpose of each test is explained in the comments above the associated
+test function.
 """
 
 import pytest
 from hw6 import GraphBuilder
 
 class TestGraphBuilder():
+    """ Tests for createMatrix function """
+    
+    empty_file = 'empty.txt'
+    non_square_file = 'nonsquare.txt'
+    square_matrix_file = 'square.txt'
+    
     empty_graph = []
     single_node = [['0']]
     disjoint_graph = [['0', '0'],
@@ -64,19 +73,22 @@ class TestGraphBuilder():
         assert graph.generateEdges() == 'A -> B\n'
         
     # Ensure one edge is created in a graph with two edges in the adjacency
-    #   matrix between the same two nodes; in other words, an undirected graph
+    #   matrix between the same two nodes.  Two separate edges are not needed
+    #   in an undirected graph between the same two nodes.
     # Verify correct edge notation
     def testEdgesTwoEdgeGraph(self):
         graph = GraphBuilder(self.two_edge_graph)
         edgeSet = set(['B -- A', 'A -- B'])
-        edgeStrings = graph.generateEdges().split('\n')
+        edgeStrings = graph.generateEdges().strip().split('\n')
         assert len(edgeStrings) == 1
         assert edgeStrings[0] in edgeSet
         
+    
     def testEdgesTwoEdgeDigraph(self):
         graph = GraphBuilder(self.two_edge_digraph)
         edgeSet = set(['A -> B', 'B -> C'])
-        edgeStrings = graph.generateEdges().split('\n')
+        edgeStrings = graph.generateEdges().strip().split('\n')
+        assert len(edgeStrings) == 2
         assert edgeStrings[0] in edgeSet
         assert edgeStrings[1] in edgeSet
         
@@ -84,13 +96,9 @@ class TestGraphBuilder():
     def testEdgesSelfEdge(self):
         graph = GraphBuilder(self.self_edge_digraph)
         edgeSet = set(['B -> A', 'A -> A'])
-        edgeStrings = graph.generateEdges().split('\n')
+        edgeStrings = graph.generateEdges().strip().split('\n')
+        assert len(edgeStrings) == 2
         assert edgeStrings[0] in edgeSet
         assert edgeStrings[1] in edgeSet
-        
-    # def create_temp_file(self, tmpdir, file_name):
-    #     p = tmpdir.join(file_name)
-        
-    #     yield p.path
     
         

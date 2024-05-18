@@ -30,7 +30,7 @@ class GraphBuilder:
         self.edge_symbol = '--'
         self.nodes = []
         
-        # check if matrix represents an undirected graph
+        # check if matrix represents a directed graph
         i = 0
         while not self.digraph and i < len(self.matrix):
             j = 0
@@ -77,7 +77,9 @@ class GraphBuilder:
             if not self.digraph:
                 max_col = i + 1
             for j in range(max_col):
+                print(f"i: {i}, j: {j}, m[i,j] = {self.matrix[i][j]}")
                 if self.matrix[i][j] != '0':
+                    print(f"{self.nodes[i]} {self.edge_symbol} {self.nodes[j]}")
                     output += '\t' * current_indent + \
                         f'{self.nodes[i]} {self.edge_symbol} {self.nodes[j]}\n'
                     
@@ -100,10 +102,15 @@ if __name__ == "__main__":
     file_names = ['adj1.txt', 'adj2.txt', 'adj3.txt', 'adj4.txt']
     
     # create GraphViz files
-    for file_name in file_names:
-        matrix = createMatrix(file_name)
-        graph = GraphBuilder(matrix)
-        graph.generateGraph(file_name.split('.')[0] + '.dot')
+    # for file_name in file_names:
+    #     matrix = createMatrix(file_name)
+    #     graph = GraphBuilder(matrix)
+    #     graph.generateGraph(file_name.split('.')[0] + '.dot')
+        
+    # two_edge_graph = [['0', '1'],
+    #                   ['1', '0']]
+    # graph = GraphBuilder(two_edge_graph)
+    # print(graph.generateEdges())
     
     # invoke testing code via pytest
     # "-rA" argument included to list all tests, including passed tests

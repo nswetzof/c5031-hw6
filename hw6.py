@@ -9,11 +9,25 @@ import sys, string, pytest
 #   name, containing tab-separated edge weights
 def createMatrix(file_name):
     matrix = []
+    row_length = -1
+    col_length = 0
     
     with open(file_name, 'r') as file:
-            for line in file.readlines():
-                matrix.append(line.strip('\n').split('\t'))
-                
+        for line in file.readlines():
+            row = line.strip('\n').split('\t')
+            
+            if row_length != len(row):
+                if row_length == -1:
+                    row_length = len(row)
+                else:
+                    raise ValueError('Row lengths must all be equal')
+                    
+            matrix.append(row)
+            col_length += 1
+        print(f"row length: {row_length}, column length: {col_length}")
+        if col_length != row_length and row_length > 0:
+            raise ValueError('Not a square matrix.  Row and column lengths must be equal.')
+        
     return matrix
     
 
@@ -45,6 +59,7 @@ class GraphBuilder:
         for i in range(len(self.matrix)):
             self.nodes.append(self.nodeToString(i))
             
+    # Write GraphViz code to the file named with the file_name parameter
     def generateGraph(self, file_name):
         with open(file_name, 'w') as file:
             if self.digraph:
@@ -77,12 +92,10 @@ class GraphBuilder:
             if not self.digraph:
                 max_col = i + 1
             for j in range(max_col):
-                print(f"i: {i}, j: {j}, m[i,j] = {self.matrix[i][j]}")
                 if self.matrix[i][j] != '0':
-                    print(f"{self.nodes[i]} {self.edge_symbol} {self.nodes[j]}")
                     output += '\t' * current_indent + \
                         f'{self.nodes[i]} {self.edge_symbol} {self.nodes[j]}\n'
-                    
+        
         return output
     
     # Helper method converts an integer to a letter representing the node name 
@@ -106,11 +119,6 @@ if __name__ == "__main__":
     #     matrix = createMatrix(file_name)
     #     graph = GraphBuilder(matrix)
     #     graph.generateGraph(file_name.split('.')[0] + '.dot')
-        
-    # two_edge_graph = [['0', '1'],
-    #                   ['1', '0']]
-    # graph = GraphBuilder(two_edge_graph)
-    # print(graph.generateEdges())
     
     # invoke testing code via pytest
     # "-rA" argument included to list all tests, including passed tests

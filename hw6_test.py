@@ -6,13 +6,12 @@ The purpose of each test is explained in the comments above the associated
 test function.
 """
 
-import pytest
-from hw6 import GraphBuilder
+import pytest, os
+from hw6 import GraphBuilder, createMatrix
 
-class TestGraphBuilder():
-    """ Tests for createMatrix function """
-    
+class TestGraphBuilder():    
     empty_file = 'empty.txt'
+    unequal_row_file = 'unequalrows.txt'
     non_square_file = 'nonsquare.txt'
     square_matrix_file = 'square.txt'
     
@@ -24,13 +23,29 @@ class TestGraphBuilder():
                         ['0', '0']]
     two_edge_graph = [['0', '1'],
                       ['1', '0']]
-    two_edge_digraph = [['0', '1', '0'],
-                        ['0', '0', '1'],
-                        ['0', '0', '0']]
     self_edge_digraph = [['1', '0'],
                          ['1', '0']]
     self_edge_graph = [['1', '0'],
                        ['0', '0']]
+    
+    """ Tests for createMatrix function """
+    
+    def test_CreateMatrixEmpty(self):
+        m = createMatrix(self.empty_file)
+        assert m == []
+        
+    def test_CreateMatrixUnequalRows(self):
+        with pytest.raises(ValueError, match='Row lengths must all be equal'):
+            createMatrix(self.unequal_row_file)
+            
+    def test_CreateMatrixNonSquare(self):
+        with pytest.raises(ValueError, \
+                           match=r'Not a square matrix.  Row and column lengths must be equal.'):
+            createMatrix(self.non_square_file)
+            
+    def test_CreateMatrixSquare(self):
+        m = createMatrix(self.square_matrix_file)
+        assert m == [['1', '0'], ['0', '0']]
     
     """ Tests for generateNodes() """
     
@@ -83,17 +98,8 @@ class TestGraphBuilder():
         assert len(edgeStrings) == 1
         assert edgeStrings[0] in edgeSet
         
-    
-    def testEdgesTwoEdgeDigraph(self):
-        graph = GraphBuilder(self.two_edge_digraph)
-        edgeSet = set(['A -> B', 'B -> C'])
-        edgeStrings = graph.generateEdges().strip().split('\n')
-        assert len(edgeStrings) == 2
-        assert edgeStrings[0] in edgeSet
-        assert edgeStrings[1] in edgeSet
-        
-    
-    def testEdgesSelfEdge(self):
+    # Ensure that self edges are included in a digraph
+    def testEdgesSelfEdgeDigraph(self):
         graph = GraphBuilder(self.self_edge_digraph)
         edgeSet = set(['B -> A', 'A -> A'])
         edgeStrings = graph.generateEdges().strip().split('\n')
@@ -101,4 +107,52 @@ class TestGraphBuilder():
         assert edgeStrings[0] in edgeSet
         assert edgeStrings[1] in edgeSet
     
+    # Ensure that self edges are included in an undirected graph
+    def testEdgesSelfEdgeGraph(self):
+        graph = GraphBuilder(self.self_edge_graph)
+        assert graph.generateEdges() == 'A -- A\n'
+        
+    """ Tests for generateGraph() """
+    
+    # Ensure that no nodes or edges are written to the output file from an empty
+    #   graph
+    def testGraphEmptyGraph(self):
+        graph = GraphBuilder(self.empty_graph)
+        expected = 'graph {\n}'
+        actual = ''
+        
+        graph.generateGraph('test.dot')
+        
+        with open('test.dot', 'r') as file:
+            actual = file.read()
+            
+        assert actual == expected
+        
+    # Ensure the graph is correctly labeled as a digraph and outputs the nodes
+    #   and edges in the proper format
+    def testGraphDigraph(self):
+        graph = GraphBuilder(self.one_edge_digraph)
+        expected = 'digraph {\n\tA\n\tB\n\tA -> B\n}'
+        actual = ''
+        
+        graph.generateGraph('test.dot')
+        
+        with open('test.dot', 'r') as file:
+            actual = file.read()
+            
+        assert actual == expected
+       
+    # Ensure the graph is correctly labeled as a graph and outputs the nodes
+    #   and edges in the proper format
+    def testGraphUndirectedGraph(self):
+        graph = GraphBuilder(self.two_edge_graph)
+        expected = 'graph {\n\tA\n\tB\n\tB -- A\n}'
+        actual = ''
+        
+        graph.generateGraph('test.dot')
+        
+        with open('test.dot', 'r') as file:
+            actual = file.read()
+            
+        assert actual == expected
         

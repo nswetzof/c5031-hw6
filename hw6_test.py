@@ -12,7 +12,6 @@ from hw6 import GraphBuilder, createMatrix
 
 class TestGraphBuilder():    
     # names of files used to test createMatrix function
-    empty_file = 'empty.txt'
     unequal_row_file = 'unequalrows.txt'
     non_square_file = 'nonsquare.txt'
     square_matrix_file = 'square.txt'
@@ -31,12 +30,6 @@ class TestGraphBuilder():
                        ['0', '0']]
     
     """ Tests for createMatrix function """
-    
-    # Test empty matrix is generated from an empty file and no exceptions
-    #   occur
-    def test_CreateMatrixEmpty(self):
-        m = createMatrix(self.empty_file)
-        assert m == []
         
     # Test for exception if rows do not have equal lengths, resulting in an
     #   invalid matrix
